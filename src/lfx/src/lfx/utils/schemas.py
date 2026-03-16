@@ -82,14 +82,9 @@ class ChatOutputResponse(BaseModel):
                 if not type_:
                     # get the file type from the path
                     extension = path.split(".")[-1]
-                    file_types = set(TEXT_FILE_TYPES + IMG_FILE_TYPES)
-                    if extension and extension in file_types:
+                    # file_types = set(TEXT_FILE_TYPES + IMG_FILE_TYPES)
+                    if extension:
                         type_ = extension
-                    else:
-                        for file_type in file_types:
-                            if file_type in path:
-                                type_ = file_type
-                                break
                     if not type_:
                         msg = "File type is required."
                         raise ValueError(msg)

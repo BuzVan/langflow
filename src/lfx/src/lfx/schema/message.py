@@ -130,27 +130,41 @@ class Message(Data):
 
     def model_post_init(self, /, _context: Any) -> None:
         new_files: list[Any] = []
+        # Печатаем для контроля
+        logger.debug(f"Processing files: {self.files}")
+        
         for file in self.files or []:
-            # Skip if already an Image instance
+            # 1. Если это объект Image - оставляем
             if isinstance(file, Image):
                 new_files.append(file)
-            # Get the path string if file is a dict or has path attribute
-            elif isinstance(file, dict) and "path" in file:
-                file_path = file["path"]
+            
+            # 2. Если это СТРОКА (ваш случай в логе!)
+            elif isinstance(file, str):
+                if is_image_file(file):
+                    new_files.append(Image(path=file))
+                else:
+                    # Превращаем строку в словарь, который ждет Pydantic
+                    new_files.append({
+                        "path": file,
+                        "name": file.split("\\")[-1].split("/")[-1], # убираем путь
+                        "type": file.split(".")[-1] if "." in file else "file"
+                    })
+            
+            # 3. Если это словарь
+            elif isinstance(file, dict):
+                file_path = file.get("path", "")
                 if file_path and is_image_file(file_path):
                     new_files.append(Image(path=file_path))
                 else:
-                    new_files.append(file_path if file_path else file)
-            elif hasattr(file, "path") and file.path:
-                if is_image_file(file.path):
-                    new_files.append(Image(path=file.path))
-                else:
-                    new_files.append(file.path)
-            elif isinstance(file, str) and is_image_file(file):
-                new_files.append(Image(path=file))
+                    # Добавляем тип, если его нет
+                    if not file.get("type"):
+                        file["type"] = file_path.split(".")[-1] if "." in file_path else "file"
+                    new_files.append(file)
             else:
                 new_files.append(file)
+
         self.files = new_files
+        logger.debug(f"Result files: {self.files}")
         if "timestamp" not in self.data:
             self.data["timestamp"] = self.timestamp
 

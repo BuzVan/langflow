@@ -33,7 +33,7 @@ const UploadFileButton = ({
           ref={fileInputRef}
           style={{ display: "none" }}
           onChange={handleFileChange}
-          accept=".png,.jpg,.jpeg,image/png,image/jpeg"
+          accept="*"
         />
         <Button
           disabled={isBuilding}
@@ -45,7 +45,7 @@ const UploadFileButton = ({
           onClick={handleClick}
           unstyled
         >
-          <ForwardedIconComponent className="h-[18px] w-[18px]" name="Image" />
+          <ForwardedIconComponent className="h-[18px] w-[18px]" name="Paperclip" />
         </Button>
       </div>
     </ShadTooltip>

@@ -119,8 +119,7 @@ export default function ChatInput({
       }
 
       if (
-        !fileExtension ||
-        !ALLOWED_IMAGE_INPUT_EXTENSIONS.includes(fileExtension)
+        !fileExtension
       ) {
         setErrorData({
           title: "Error uploading file",

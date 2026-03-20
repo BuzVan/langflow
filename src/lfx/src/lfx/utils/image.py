@@ -78,7 +78,7 @@ def create_image_content_dict(
     model_name: str | None = None,  # noqa: ARG001
 ) -> dict:
     """Create a content dictionary for multimodal inputs from an image file.
-
+    ОБНОВЛЕНИЕ: Для всех файлов возвращает путь к файлу, а не base-64 код
     Args:
         image_path: Path to the image file (local or S3 path like "flow_id/filename")
         mime_type: MIME type of the image. If None, will be auto-detected
@@ -90,8 +90,13 @@ def create_image_content_dict(
     Raises:
         FileNotFoundError: If the image file doesn't exist
     """
-    data_url = create_data_url(image_path, mime_type)
+    # LLM получит это как обычный текст в списке контента
+    return {
+        "type": "text", 
+        "text": f"\n[Прикреплен файл: {image_path}]"
+    }
+    # data_url = create_data_url(image_path, mime_type)
 
-    # Standard format for OpenAI, Anthropic, Gemini, and most providers
-    # Format: {"type": "image_url", "image_url": {"url": "data:..."}}
-    return {"type": "image_url", "image_url": {"url": data_url}}
+    # # Standard format for OpenAI, Anthropic, Gemini, and most providers
+    # # Format: {"type": "image_url", "image_url": {"url": "data:..."}}
+    # return {"type": "image_url", "image_url": {"url": data_url}}
